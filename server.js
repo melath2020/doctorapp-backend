@@ -3,7 +3,7 @@ const colors = require('colors');
 const morgon = require('morgan');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
-const userRoutes= require('./routes/userRoutes')
+const userRoutes= require('./routes/userRoutes');
 // dotenv config
 dotenv.config()
 
