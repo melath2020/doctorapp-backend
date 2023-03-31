@@ -4,6 +4,7 @@ const morgon = require('morgan');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const userRoutes= require('./routes/userRoutes');
+const adminRoutes= require('./routes/adminRoutes');
 const cors = require("cors");
 // dotenv config
 dotenv.config()
@@ -21,6 +22,7 @@ app.use(cors());
 // routes
 
 app.use('/api/v1/user',userRoutes)
+app.use('/api/v1/admin',adminRoutes)
 
 const port= process.env.PORT || 8080
 // listen
