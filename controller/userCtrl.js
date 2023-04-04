@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs')
 const jwt=require('jsonwebtoken');
 const doctorModel = require('../models/doctorModels');
 const appointmentModel = require('../models/appointmentModel');
+const moment = require('moment/moment');
 // register
 const registerController=async(req,res)=>{
     try{
@@ -100,6 +101,7 @@ const applyDoctorController =async(req,res)=>{
 
 const getAllNotificationController = async(req,res)=>{
 try{
+    
     const user = await userModel.findOne({_id:req.body.userId})
     const seennotiication = user.seennotification
     const notification = user.notification
@@ -168,6 +170,8 @@ const getAllDoctorController=async(req,res)=>{
 
 const bookAppointmentController=async(req,res)=>{
     try{
+        req.body.date=moment(req.body.date,'DD-MM-YYYY').toISOString()
+        req.body.time=moment(req.body.time,'HH:mm').toISOString();
         req.body.status='pending'
         const newAppointment= new appointmentModel(req.body)
         await newAppointment.save()
@@ -191,6 +195,41 @@ const bookAppointmentController=async(req,res)=>{
             message:'Error While booking appointment'
         })
     }
- }
+}
 
-module.exports={loginController,registerController,authController,applyDoctorController,getAllNotificationController,deleteAllNotificationController,getAllDoctorController,bookAppointmentController};
+const bookingAvailiabilityController=async(req,res)=>{
+    try{
+        const date=moment(req.body.date,'DD-MM-YYYY').toISOString()
+        const fromTime=moment(req.body.time,'HH:mm').subtract(1,'hours').toISOString()
+        const toTime=moment(req.body.time,'HH:mm').subtract(1,'hours').toISOString()
+        const doctorId=req.body.doctorId
+        const appointments= await appointmentModel.find({doctorId,date,time:{
+            $get:fromTime,
+            $let:toTime
+        }})
+        if(appointments.length > 0){
+            return res.status(200).send({
+                message:'Appointments is not availiable at this time',
+                success:true
+            })
+        }else{
+            return res.status(200).send({
+                success:true,
+                message:'Appointments availiable'
+            })
+        }
+    }catch(error){
+        console.log(error)
+        res.status(500).send({
+            success:false,
+            error,
+            message:'Error in Booking'
+        })
+    }
+}
+
+
+
+
+
+module.exports={loginController,registerController,authController,applyDoctorController,getAllNotificationController,deleteAllNotificationController,getAllDoctorController,bookAppointmentController,bookingAvailiabilityController};
