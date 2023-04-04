@@ -201,11 +201,11 @@ const bookingAvailiabilityController=async(req,res)=>{
     try{
         const date=moment(req.body.date,'DD-MM-YYYY').toISOString()
         const fromTime=moment(req.body.time,'HH:mm').subtract(1,'hours').toISOString()
-        const toTime=moment(req.body.time,'HH:mm').subtract(1,'hours').toISOString()
+        const toTime=moment(req.body.time,'HH:mm').add(1,'hours').toISOString()
         const doctorId=req.body.doctorId
         const appointments= await appointmentModel.find({doctorId,date,time:{
-            $get:fromTime,
-            $let:toTime
+            $gte:fromTime,
+            $lte:toTime
         }})
         if(appointments.length > 0){
             return res.status(200).send({
