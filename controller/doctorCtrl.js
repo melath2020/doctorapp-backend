@@ -79,7 +79,7 @@ const getDoctorByIdController=async(req,res)=>{
         message: "Error in Doc Appointments",
       });
     }
-  };
+  }; 
 
  const updateStatusController=async(req,res)=>{
     try{
